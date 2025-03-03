@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>雷锋盲盒大挑战</title>
+    <style>
+        body {
+            background: url('leifeng-bg.jpg');
+            font-family: '微软雅黑';
+        }
+        .box {
+            width: 300px;
+            height: 300px;
+            margin: 50px auto;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .task-card {
+            background: #FFD700;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 align="center">雷锋盲盒大挑战</h1>
+    <div id="game">
+        < img src="mystery-box.png" class="box" onclick="openBox()">
+        <div id="taskDisplay"></div>
+    </div>
+
+    <script>
+        const tasks = [
+            "为邻居取快递",
+            "整理共享单车",
+            "清洁社区宣传栏",
+            "教老人使用手机",
+            "捐赠闲置衣物",
+            "写感谢卡给物业人员"
+        ];
+
+        function openBox() {
+            const randomTask = tasks[Math.floor(Math.random()*tasks.length)];
+            document.getElementById('taskDisplay').innerHTML = `
+                <div class="task-card">
+                    <h2>你的专属任务</h2>
+                    <p>${randomTask}</p >
+                    <button onclick="shareTask()">接受挑战！</button>
+                </div>
+            `;
+        }
+
+        function shareTask() {
+            alert("完成挑战后，请截图分享朋友圈！#学雷锋盲盒挑战#");
+        }
+    </script>
+</body>
+</html>
