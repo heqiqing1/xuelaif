@@ -1,191 +1,148 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>贪吃蛇</title>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="贪吃蛇">
-	<meta name="Description" content="这是一个初学者用来学习的小游戏">
-	<style type="text/css">
-	*{margin:0;}
-	.map{margin:100px auto;
-		height:600px;
-		width:900px;
-		background:#00D0FF;
-		border:10px solid #AFAEB2;
-		border-radius:8px;
-	}
-	</style>
- 
- 
- 
+    <title>学雷锋贪吃蛇</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="贪吃蛇, 学雷锋">
+    <meta name="Description" content="这是一个以学雷锋为主题的贪吃蛇小游戏">
+    <style type="text/css">
+        * { margin: 0; }
+        .map {
+            margin: 50px auto;
+            height: 600px;
+            width: 900px;
+            background: #E8F5E9; /* 浅绿色背景 */
+            border: 10px solid #4CAF50; /* 绿色边框 */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-top: 20px;
+            font-family: '微软雅黑', sans-serif;
+        }
+    </style>
 </head>
- 
 <body>
-<div class="map">
-<canvas id="canvas" height="600" width="900">
-	
-</canvas>
-</div>
- 
-<script type="text/javascript">
- //获取绘制工具
-	/*
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");//获取上下文
-	ctx.moveTo(0,0);
-	ctx.lineTo(450,450);*/
-	var c=document.getElementById("canvas");
-    var ctx=c.getContext("2d");
-    /*ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.lineTo(450,450);
-    ctx.stroke();
-    */
- 
-    var snake =[];//定义一条蛇，画蛇的身体
-    var snakeCount = 6;//初始化蛇的长度
-	var foodx =0;
-	var foody =0;
-    var togo =0;
-    function drawtable()//画地图的函数
-    {
- 
- 
-    	for(var i=0;i<60;i++)//画竖线
-    	{
-    		ctx.strokeStyle="black";
-    		ctx.beginPath();
-    		ctx.moveTo(15*i,0);
-    		ctx.lineTo(15*i,600);
-    		ctx.closePath();
-    		ctx.stroke();
-    	}
-        for(var j=0;j<40;j++)//画横线
-    	{
-    		ctx.strokeStyle="black";
-    		ctx.beginPath();
-    		ctx.moveTo(0,15*j);
-    		ctx.lineTo(900,15*j);
-    		ctx.closePath();
-    		ctx.stroke();
-    	}
-    	
-    	for(var k=0;k<snakeCount;k++)//画蛇的身体
-			{
-			ctx.fillStyle="#000";
-			if (k==snakeCount-1)
-			{
-				ctx.fillStyle="red";//蛇头的颜色与身体区分开
-			}
-			ctx.fillRect(snake[k].x,snake[k].y,15,15);//前两个数是矩形的起始坐标，后两个数是矩形的长宽。
-			
-			}
-			//绘制食物	
-    		ctx.fillStyle ="black";
-	     ctx.fillRect(foodx,foody,15,15);
-	     ctx.fill();
-    	
-    }
- 
-    
-    function start()//定义蛇的坐标
-    {
-    	//var snake =[];//定义一条蛇，画蛇的身体
-        //var snakeCount = 6;//初始化蛇的长度
-		
-		for(var k=0;k<snakeCount;k++)
-    		{
-    			snake[k]={x:k*15,y:0};
-    			
+    <h1>学雷锋贪吃蛇</h1>
+    <div class="map">
+        <canvas id="canvas" height="600" width="900"></canvas>
+    </div>
+
+    <script type="text/javascript">
+        // 获取画布和上下文
+        var c = document.getElementById("canvas");
+        var ctx = c.getContext("2d");
+
+        // 定义蛇和食物
+        var snake = []; // 蛇的身体
+        var snakeCount = 6; // 初始长度
+        var foodx = 0; // 食物的x坐标
+        var foody = 0; // 食物的y坐标
+        var togo = 0; // 蛇的移动方向
+        var words = ["学", "雷", "锋"]; // 蛇身体的文字
+
+        // 画地图
+        function drawtable() {
+            ctx.clearRect(0, 0, 900, 600); // 清空画布
+
+            // 画蛇的身体
+            for (var k = 0; k < snakeCount; k++) {
+                ctx.fillStyle = k === snakeCount - 1 ? "#FF5722" : "#4CAF50"; // 蛇头为橙色，身体为绿色
+                ctx.fillRect(snake[k].x, snake[k].y, 15, 15);
+                ctx.fillStyle = "#FFF"; // 文字颜色为白色
+                ctx.font = "12px Arial";
+                ctx.fillText(words[k % 3], snake[k].x + 3, snake[k].y + 12); // 在方块中显示文字
             }
-			
-		  drawtable();
-          addfood();//在start中调用添加食物函数
- 
-    }
- 
-    function addfood()
-	{
-	foodx = Math.floor(Math.random()*60)*15; //随机产生一个0-1之间的数
-	foody = Math.floor(Math.random()*40)*15;
-		
-		for (var k=0;k<snake;k++)
-		{
-			if (foodx==snake[k].x&&foody==sanke[k].y)//防止产生的随机食物落在蛇身上
-			{	
-			addfood();
-			}
-		}
-	
-	
-	}	
-    		
-   function move()
-   {
-	switch (togo)
-	{
-	case 1: snake.push({x:snake[snakeCount-1].x-15,y:snake[snakeCount-1].y}); break;//向左走
-	case 2: snake.push({x:snake[snakeCount-1].x,y:snake[snakeCount-1].y-15}); break;
-	case 3: snake.push({x:snake[snakeCount-1].x+15,y:snake[snakeCount-1].y}); break;
-	case 4: snake.push({x:snake[snakeCount-1].x,y:snake[snakeCount-1].y+15}); break;
-	case 5: snake.push({x:snake[snakeCount-1].x-15,y:snake[snakeCount-1].y-15}); break;
-	case 6: snake.push({x:snake[snakeCount-1].x+15,y:snake[snakeCount-1].y+15}); break;
-	default: snake.push({x:snake[snakeCount-1].x+15,y:snake[snakeCount-1].y});
-	}
-    snake.shift();//删除数组第一个元素
-   	ctx.clearRect(0,0,900,600);//清除画布重新绘制
-   	isEat();
-	isDead();
-	drawtable();
-   } 			
-   
-   function keydown(e)
-   {
-   switch(e.keyCode)
-		{
-         case 37: togo=1; break;
-		 case 38: togo=2; break;
-		 case 39: togo=3; break;
-		 case 40: togo=4; break;
-		 case 65: togo=5; break;
-		 case 68: togo=6; break;
-		}
-   }
-   
-   function isEat()//吃到食物后长度加1
-   {
-    if(snake[snakeCount-1].x==foodx&&snake[snakeCount-1].y==foody)
-   {
-		addfood();
-		snakeCount++;
-		snake.unshift({x:-15,y:-15});
-   }
-   
-   }
-   
-   function isDead()
-   {
-    if (snake[snakeCount-1].x>885||snake[snakeCount-1].y>585||snake[snakeCount-1].x<0||snake[snakeCount-1].y<0)
-		{
-		alert("You are dead,GAME OVER!!!");
-		window.location.reload();
-		}
-   }
-   
-    document.onkeydown=function(e)
-{
-	keydown(e);
- 
-} 
-window.onload = function()//调用函数
-{ 
-	start();
-	setInterval(move,150);
-	drawtable();
-	
-	
- 
-}
-</script>
+
+            // 画食物
+            ctx.fillStyle = "#FF0000"; // 食物为红色
+            ctx.font = "15px Arial";
+            ctx.fillText("❤", foodx + 3, foody + 12); // 食物用“❤”表示
+        }
+
+        // 初始化蛇的位置
+        function start() {
+            for (var k = 0; k < snakeCount; k++) {
+                snake[k] = { x: k * 15, y: 0 };
+            }
+            drawtable();
+            addfood(); // 添加食物
+        }
+
+        // 随机生成食物
+        function addfood() {
+            foodx = Math.floor(Math.random() * 60) * 15;
+            foody = Math.floor(Math.random() * 40) * 15;
+
+            // 防止食物生成在蛇身上
+            for (var k = 0; k < snakeCount; k++) {
+                if (foodx === snake[k].x && foody === snake[k].y) {
+                    addfood();
+                    return;
+                }
+            }
+        }
+
+        // 蛇的移动
+        function move() {
+            var head = { x: snake[snakeCount - 1].x, y: snake[snakeCount - 1].y };
+
+            switch (togo) {
+                case 1: head.x -= 15; break; // 左
+                case 2: head.y -= 15; break; // 上
+                case 3: head.x += 15; break; // 右
+                case 4: head.y += 15; break; // 下
+                default: head.x += 15; // 默认向右
+            }
+
+            snake.push(head); // 添加新头部
+            snake.shift(); // 删除尾部
+
+            // 检查是否吃到食物
+            if (head.x === foodx && head.y === foody) {
+                addfood();
+                snakeCount++;
+                snake.unshift({ x: -15, y: -15 }); // 增加身体长度
+            }
+
+            // 检查是否撞墙或撞到自己
+            if (head.x < 0 || head.x >= 900 || head.y < 0 || head.y >= 600 || checkCollision()) {
+                alert("游戏结束！你的分数是：" + (snakeCount - 6));
+                window.location.reload(); // 重新开始游戏
+            }
+
+            drawtable(); // 重新绘制
+        }
+
+        // 检查是否撞到自己
+        function checkCollision() {
+            var head = snake[snakeCount - 1];
+            for (var k = 0; k < snakeCount - 1; k++) {
+                if (head.x === snake[k].x && head.y === snake[k].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // 键盘控制
+        function keydown(e) {
+            switch (e.keyCode) {
+                case 37: togo = 1; break; // 左
+                case 38: togo = 2; break; // 上
+                case 39: togo = 3; break; // 右
+                case 40: togo = 4; break; // 下
+            }
+        }
+
+        // 初始化游戏
+        document.onkeydown = keydown;
+        window.onload = function () {
+            start();
+            setInterval(move, 150); // 每150ms移动一次
+        };
+    </script>
 </body>
 </html>
