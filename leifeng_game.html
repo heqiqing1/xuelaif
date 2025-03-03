@@ -1,58 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>雷锋盲盒大挑战</title>
+    <title>文字版雷锋任务挑战</title>
     <style>
         body {
-            background: url('leifeng-bg.jpg');
+            background: #F0F8FF;
             font-family: '微软雅黑';
+            text-align: center;
+            padding: 50px;
         }
-        .box {
-            width: 300px;
-            height: 300px;
-            margin: 50px auto;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .task-card {
-            background: #FFD700;
-            padding: 20px;
+        .task-box {
+            background: #FFF;
+            padding: 30px;
             border-radius: 10px;
-            margin: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        button {
+            background: #20B2AA;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .progress {
+            margin-top: 30px;
+            font-size: 18px;
+            color: #2E8B57;
         }
     </style>
 </head>
 <body>
-    <h1 align="center">雷锋盲盒大挑战</h1>
-    <div id="game">
-        < img src="mystery-box.png" class="box" onclick="openBox()">
-        <div id="taskDisplay"></div>
+
+    <h1>文字版雷锋任务挑战</h1>
+    <div class="task-box">
+        <p id="task">点击按钮获取今日任务</p >
+        <button onclick="getTask()">获取任务</button>
+        <button onclick="completeTask()" id="completeBtn" disabled>完成任务</button>
+    </div>
+
+    <div class="progress">
+        今日进度：<span id="progress">0%</span>
     </div>
 
     <script>
         const tasks = [
-            "为邻居取快递",
-            "整理共享单车",
-            "清洁社区宣传栏",
-            "教老人使用手机",
-            "捐赠闲置衣物",
-            "写感谢卡给物业人员"
+            "帮助同学解答一道难题",
+            "整理教室的图书角",
+            "为老师准备一杯温水",
+            "写一封感谢信给父母",
+            "清理校园里的垃圾",
+            "帮助食堂阿姨收拾餐具"
         ];
+        let currentTask = '';
+        let completed = 0;
 
-        function openBox() {
-            const randomTask = tasks[Math.floor(Math.random()*tasks.length)];
-            document.getElementById('taskDisplay').innerHTML = `
-                <div class="task-card">
-                    <h2>你的专属任务</h2>
-                    <p>${randomTask}</p >
-                    <button onclick="shareTask()">接受挑战！</button>
-                </div>
-            `;
+        function getTask() {
+            currentTask = tasks[Math.floor(Math.random() * tasks.length)];
+            document.getElementById('task').innerText = `今日任务：${currentTask}`;
+            document.getElementById('completeBtn').disabled = false;
         }
 
-        function shareTask() {
-            alert("完成挑战后，请截图分享朋友圈！#学雷锋盲盒挑战#");
+        function completeTask() {
+            completed++;
+            document.getElementById('progress').innerText = `${Math.min(completed * 50, 100)}%`;
+            document.getElementById('task').innerHTML = `
+                任务完成！<br>
+                分享文案：<br>
+                <textarea rows="3" style="width:80%">
+                我在#学雷锋日#完成了任务：${currentTask}
+                你也来挑战吧！
+                </textarea>
+            `;
+            document.getElementById('completeBtn').disabled = true;
         }
     </script>
+
 </body>
 </html>
