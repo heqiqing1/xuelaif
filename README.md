@@ -189,4 +189,3 @@ window.onload = function()//调用函数
 </script>
 </body>
 </html>
-修改成主题为学雷锋的贪吃蛇
