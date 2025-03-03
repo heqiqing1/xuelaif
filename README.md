@@ -1,139 +1,191 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>文字俄罗斯方块 - 学雷锋版</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f0f0f0;
-        }
-        #game {
-            display: inline-block;
-            background: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .cell {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #ddd;
-            text-align: center;
-            line-height: 30px;
-            font-size: 20px;
-        }
-        .row {
-            display: flex;
-        }
-    </style>
+	<title>贪吃蛇</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="贪吃蛇">
+	<meta name="Description" content="这是一个初学者用来学习的小游戏">
+	<style type="text/css">
+	*{margin:0;}
+	.map{margin:100px auto;
+		height:600px;
+		width:900px;
+		background:#00D0FF;
+		border:10px solid #AFAEB2;
+		border-radius:8px;
+	}
+	</style>
+ 
+ 
+ 
 </head>
+ 
 <body>
-
-    <h1>文字俄罗斯方块 - 学雷锋版</h1>
-    <div id="game"></div>
-    <p>使用方向键控制：← →移动，↑旋转，↓加速</p >
-
-    <script>
-        const width = 10;
-        const height = 20;
-        const game = document.getElementById('game');
-        let board = Array.from({ length: height }, () => Array(width).fill(''));
-        const chars = ['学', '雷', '锋'];
-        let currentPiece;
-
-        function createPiece() {
-            const type = Math.floor(Math.random() * 3);
-            return {
-                shape: [[chars[type]]],
-                x: Math.floor(width / 2),
-                y: 0
-            };
-        }
-
-        function draw() {
-            game.innerHTML = '';
-            const displayBoard = JSON.parse(JSON.stringify(board));
-            if (currentPiece) {
-                currentPiece.shape.forEach((row, dy) => {
-                    row.forEach((val, dx) => {
-                        if (val) {
-                            displayBoard[currentPiece.y + dy][currentPiece.x + dx] = val;
-                        }
-                    });
-                });
+<div class="map">
+<canvas id="canvas" height="600" width="900">
+	
+</canvas>
+</div>
+ 
+<script type="text/javascript">
+ //获取绘制工具
+	/*
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");//获取上下文
+	ctx.moveTo(0,0);
+	ctx.lineTo(450,450);*/
+	var c=document.getElementById("canvas");
+    var ctx=c.getContext("2d");
+    /*ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(450,450);
+    ctx.stroke();
+    */
+ 
+    var snake =[];//定义一条蛇，画蛇的身体
+    var snakeCount = 6;//初始化蛇的长度
+	var foodx =0;
+	var foody =0;
+    var togo =0;
+    function drawtable()//画地图的函数
+    {
+ 
+ 
+    	for(var i=0;i<60;i++)//画竖线
+    	{
+    		ctx.strokeStyle="black";
+    		ctx.beginPath();
+    		ctx.moveTo(15*i,0);
+    		ctx.lineTo(15*i,600);
+    		ctx.closePath();
+    		ctx.stroke();
+    	}
+        for(var j=0;j<40;j++)//画横线
+    	{
+    		ctx.strokeStyle="black";
+    		ctx.beginPath();
+    		ctx.moveTo(0,15*j);
+    		ctx.lineTo(900,15*j);
+    		ctx.closePath();
+    		ctx.stroke();
+    	}
+    	
+    	for(var k=0;k<snakeCount;k++)//画蛇的身体
+			{
+			ctx.fillStyle="#000";
+			if (k==snakeCount-1)
+			{
+				ctx.fillStyle="red";//蛇头的颜色与身体区分开
+			}
+			ctx.fillRect(snake[k].x,snake[k].y,15,15);//前两个数是矩形的起始坐标，后两个数是矩形的长宽。
+			
+			}
+			//绘制食物	
+    		ctx.fillStyle ="black";
+	     ctx.fillRect(foodx,foody,15,15);
+	     ctx.fill();
+    	
+    }
+ 
+    
+    function start()//定义蛇的坐标
+    {
+    	//var snake =[];//定义一条蛇，画蛇的身体
+        //var snakeCount = 6;//初始化蛇的长度
+		
+		for(var k=0;k<snakeCount;k++)
+    		{
+    			snake[k]={x:k*15,y:0};
+    			
             }
-            displayBoard.forEach(row => {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'row';
-                row.forEach(cell => {
-                    const cellDiv = document.createElement('div');
-                    cellDiv.className = 'cell';
-                    cellDiv.textContent = cell;
-                    rowDiv.appendChild(cellDiv);
-                });
-                game.appendChild(rowDiv);
-            });
-        }
-
-        function movePiece(dx, dy) {
-            currentPiece.x += dx;
-            currentPiece.y += dy;
-            if (checkCollision()) {
-                currentPiece.x -= dx;
-                currentPiece.y -= dy;
-                if (dy === 1) {
-                    placePiece();
-                }
-                return false;
-            }
-            return true;
-        }
-
-        function checkCollision() {
-            return currentPiece.shape.some((row, dy) => 
-                row.some((val, dx) => 
-                    val && (board[currentPiece.y + dy]?.[currentPiece.x + dx] || 
-                           currentPiece.x + dx < 0 || 
-                           currentPiece.x + dx >= width || 
-                           currentPiece.y + dy >= height)
-            );
-        }
-
-        function placePiece() {
-            currentPiece.shape.forEach((row, dy) => {
-                row.forEach((val, dx) => {
-                    if (val) {
-                        board[currentPiece.y + dy][currentPiece.x + dx] = val;
-                    }
-                });
-            });
-            clearLines();
-            currentPiece = createPiece();
-            if (checkCollision()) {
-                alert('游戏结束！');
-                board = Array.from({ length: height }, () => Array(width).fill(''));
-            }
-        }
-
-        function clearLines() {
-            board = board.filter(row => row.some(cell => !cell));
-            while (board.length < height) {
-                board.unshift(Array(width).fill(''));
-            }
-        }
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'ArrowLeft') movePiece(-1, 0);
-            if (e.key === 'ArrowRight') movePiece(1, 0);
-            if (e.key === 'ArrowDown') movePiece(0, 1);
-            draw();
-        });
-
-        currentPiece = createPiece();
-        setInterval(() => movePiece(0, 1) && draw(), 1000);
-        draw();
-    </script>
-
+			
+		  drawtable();
+          addfood();//在start中调用添加食物函数
+ 
+    }
+ 
+    function addfood()
+	{
+	foodx = Math.floor(Math.random()*60)*15; //随机产生一个0-1之间的数
+	foody = Math.floor(Math.random()*40)*15;
+		
+		for (var k=0;k<snake;k++)
+		{
+			if (foodx==snake[k].x&&foody==sanke[k].y)//防止产生的随机食物落在蛇身上
+			{	
+			addfood();
+			}
+		}
+	
+	
+	}	
+    		
+   function move()
+   {
+	switch (togo)
+	{
+	case 1: snake.push({x:snake[snakeCount-1].x-15,y:snake[snakeCount-1].y}); break;//向左走
+	case 2: snake.push({x:snake[snakeCount-1].x,y:snake[snakeCount-1].y-15}); break;
+	case 3: snake.push({x:snake[snakeCount-1].x+15,y:snake[snakeCount-1].y}); break;
+	case 4: snake.push({x:snake[snakeCount-1].x,y:snake[snakeCount-1].y+15}); break;
+	case 5: snake.push({x:snake[snakeCount-1].x-15,y:snake[snakeCount-1].y-15}); break;
+	case 6: snake.push({x:snake[snakeCount-1].x+15,y:snake[snakeCount-1].y+15}); break;
+	default: snake.push({x:snake[snakeCount-1].x+15,y:snake[snakeCount-1].y});
+	}
+    snake.shift();//删除数组第一个元素
+   	ctx.clearRect(0,0,900,600);//清除画布重新绘制
+   	isEat();
+	isDead();
+	drawtable();
+   } 			
+   
+   function keydown(e)
+   {
+   switch(e.keyCode)
+		{
+         case 37: togo=1; break;
+		 case 38: togo=2; break;
+		 case 39: togo=3; break;
+		 case 40: togo=4; break;
+		 case 65: togo=5; break;
+		 case 68: togo=6; break;
+		}
+   }
+   
+   function isEat()//吃到食物后长度加1
+   {
+    if(snake[snakeCount-1].x==foodx&&snake[snakeCount-1].y==foody)
+   {
+		addfood();
+		snakeCount++;
+		snake.unshift({x:-15,y:-15});
+   }
+   
+   }
+   
+   function isDead()
+   {
+    if (snake[snakeCount-1].x>885||snake[snakeCount-1].y>585||snake[snakeCount-1].x<0||snake[snakeCount-1].y<0)
+		{
+		alert("You are dead,GAME OVER!!!");
+		window.location.reload();
+		}
+   }
+   
+    document.onkeydown=function(e)
+{
+	keydown(e);
+ 
+} 
+window.onload = function()//调用函数
+{ 
+	start();
+	setInterval(move,150);
+	drawtable();
+	
+	
+ 
+}
+</script>
 </body>
 </html>
